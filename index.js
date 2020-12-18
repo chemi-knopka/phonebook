@@ -19,6 +19,8 @@ let persons = [
     }
 ]
 
+app.use(express.json())
+
 app.get('/api/persons', (req, res) => {
     res.json(persons)
 });
@@ -53,6 +55,33 @@ app.delete('/api/persons/:id', (req, res) => {
 
     persons = persons.filter(person => person.id !== id);
     res.send(`deleted person with id : ${id}`)
+});
+
+const generateId = () => {
+    let id = Math.floor(Math.random()*1000000)
+    return id
+}
+
+//post new person
+app.post('/api/persons', (req, res) => {
+    const body = req.body
+    
+    // check if both name and phone number are provided
+    if (!body.name || !body.number){
+        res.status(400).json({
+            error: "name or number is not provided"
+        })
+    }
+
+    const person = {
+        name: body.name,
+        number: body.number,
+        id: generateId()
+    }
+
+    persons = persons.concat(person)
+    
+    res.json(person)
 })
 
 const PORT = 3001
