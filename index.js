@@ -72,6 +72,14 @@ app.post('/api/persons', (req, res) => {
             error: "name or number is not provided"
         })
     }
+    
+    const isPersonDuplicated = persons.find(person => person.name === body.name);
+    if (isPersonDuplicated){
+        res.status(400).json({
+            error: "person's name is already in the db"
+        })
+    }
+
 
     const person = {
         name: body.name,
@@ -80,7 +88,7 @@ app.post('/api/persons', (req, res) => {
     }
 
     persons = persons.concat(person)
-    
+
     res.json(person)
 })
 
