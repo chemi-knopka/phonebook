@@ -21,6 +21,14 @@ const persons = [
 
 app.get('/api/persons', (req, res) => {
     res.json(persons)
+});
+
+app.get('/info', (req, res) => {
+    const personInfo = 
+    `<p>there are ${persons.length} persons in the phonephone</p>
+    <p> ${new Date} </p>`
+    
+    res.send(personInfo)
 })
 
 const PORT = 3001
