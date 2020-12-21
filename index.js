@@ -1,7 +1,16 @@
+require('dotenv').config();
 const express = require("express");
 const morgan = require('morgan');
 const app = express();
 const cors = require('cors');
+const Contact = require('./models/contacts')
+
+// id generator for documents
+const generateId = () => {
+    let id = Math.floor(Math.random()*1000000)
+    return id
+}
+
 
 let persons = [
     {
@@ -30,7 +39,9 @@ app.use(morgan(':method :url :status :res[content-length] - :response-time ms :b
 
 // -- routes ---
 app.get('/api/persons', (req, res) => {
-    res.json(persons)
+    Contact.find({}).then(contacts => {
+        res.json(contacts)
+    })
 });
 
 app.get('/info', (req, res) => {
@@ -65,11 +76,6 @@ app.delete('/api/persons/:id', (req, res) => {
     res.send(`deleted person with id : ${id}`)
 });
 
-const generateId = () => {
-    let id = Math.floor(Math.random()*1000000)
-    return id
-}
-
 //post new person
 app.post('/api/persons', (req, res) => {
     const body = req.body
@@ -81,23 +87,14 @@ app.post('/api/persons', (req, res) => {
         })
     }
     
-    const isPersonDuplicated = persons.find(person => person.name === body.name);
-    if (isPersonDuplicated){
-        res.status(400).json({
-            error: "person's name is already in the db"
-        })
-    }
-
-
-    const person = {
+    const contact = new Contact({
         name: body.name,
         number: body.number,
-        id: generateId()
-    }
+    })
 
-    persons = persons.concat(person)
-
-    res.json(person)
+    contact.save().then(returnedContact => {
+        res.json(returnedContact)
+    })
 })
 
 const PORT = process.env.PORT || 3001
