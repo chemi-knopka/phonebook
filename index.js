@@ -53,28 +53,19 @@ app.get('/info', (req, res) => {
 });
 
 app.get('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id)
-    const person = persons.find(person => person.id === id);
-
-    if (!person){
-        res.status(404).end()
-    }
-
-    res.json(person)
+    Contact.findById(req.params.id).then(contact => {
+        res.json(contact)
+    })
 });
 
 // delete person
-app.delete('/api/persons/:id', (req, res) => {
-    const id = Number(req.params.id);
-    const person = persons.find(person => person.id === id);
-
-    if (!person){
-        res.status(404).end()
-    }
-
-    persons = persons.filter(person => person.id !== id);
-    res.send(`deleted person with id : ${id}`)
-});
+app.delete('/api/persons/:id', (request, response, next) => {
+    Contact.findByIdAndRemove(request.params.id)
+      .then(result => {
+        response.status(204).end()
+      })
+      .catch(error => next(error))
+  })
 
 //post new person
 app.post('/api/persons', (req, res) => {

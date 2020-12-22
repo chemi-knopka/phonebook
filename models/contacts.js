@@ -18,4 +18,12 @@ const contactSchema = mongoose.Schema({
     number:String,
 })
 
+contactSchema.set('toJSON', {
+    transform: (document, contactObj) => {
+        contactObj.id = contactObj._id
+        delete contactObj._id
+        delete contactObj.__v
+    }
+})
+
 module.exports = mongoose.model('Contact', contactSchema);
