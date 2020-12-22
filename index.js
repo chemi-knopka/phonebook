@@ -5,34 +5,11 @@ const app = express();
 const cors = require('cors');
 const Contact = require('./models/contacts')
 
-// id generator for documents
-const generateId = () => {
-    let id = Math.floor(Math.random()*1000000)
-    return id
-}
-
-
-let persons = [
-    {
-        id: 1,
-        name: "artos",
-        number: "1111"
-    },
-    {
-        id: 2,
-        name: 'batos',
-        number: '22-2'
-    },
-    {
-        id: 3,
-        name: 'partos',
-        number: '33-3-3'
-    }
-]
 
 app.use(express.static('build'))
 app.use(cors())
 app.use(express.json());
+
 // set up morgan for logins
 morgan.token('body', (req, res) => JSON.stringify(req.body));
 app.use(morgan(':method :url :status :res[content-length] - :response-time ms :body'));
@@ -52,10 +29,19 @@ app.get('/info', (req, res) => {
     res.send(personInfo)
 });
 
-app.get('/api/persons/:id', (req, res) => {
-    Contact.findById(req.params.id).then(contact => {
-        res.json(contact)
-    })
+app.get('/api/persons/:id', (req, res, next) => {
+    Contact.findById(req.params.id)
+        .then(contact => {
+            if (contact){
+                res.json(contact)
+            } else {
+                res.status(404).end()
+            }
+        })
+        .catch(error => {
+            //res.status(400).send({error: "malformed id"})
+            next(error)
+        })
 });
 
 // delete person
@@ -88,6 +74,22 @@ app.post('/api/persons', (req, res) => {
     })
 })
 
+// this middleware must be in the end of the code to work correctly
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError' && error.kind == 'ObjectId') {
+    return response.status(400).send({ error: 'malformatted id' })
+  } 
+
+  next(error)
+}
+
+// use error handle middle ware in routes
+app.use(errorHandler)
+
+
+// listen to the port
 const PORT = process.env.PORT || 3001
 app.listen(PORT)
 console.log(`server is listening on port ${PORT}`);

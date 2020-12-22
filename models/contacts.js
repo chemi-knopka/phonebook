@@ -1,12 +1,12 @@
 const mongoose = require('mongoose');
 
 const url = process.env.DB_URI
-console.log("connecting to :", url);
+console.log("connecting to database....");
 
 // database connection
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
     .then(res => {
-        console.log("connected to db");
+        console.log("connected to MongoDB");
     })
     .catch(error => {
         console.log("failed to connect to db", error.message)
