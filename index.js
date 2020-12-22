@@ -21,12 +21,15 @@ app.get('/api/persons', (req, res) => {
     })
 });
 
-app.get('/info', (req, res) => {
-    const personInfo = 
-    `<p>there are ${persons.length} persons in the phonephone</p>
-    <p> ${new Date} </p>`
+app.get('/info', async (req, res, next) => {
+    Contact.find({}).then(allContacts => {
+        const personInfo = `<p>there are ${allContacts.length} persons in the phonephone</p>
+        <p> ${new Date} </p>`
+            
+        res.send(personInfo)
+    })
     
-    res.send(personInfo)
+    
 });
 
 app.get('/api/persons/:id', (req, res, next) => {
@@ -72,6 +75,16 @@ app.post('/api/persons', (req, res) => {
     contact.save().then(returnedContact => {
         res.json(returnedContact)
     })
+});
+
+app.put('/api/persons/:id', async (request, response, next) => {
+    const body = request.body;
+    
+    Contact.findByIdAndUpdate(request.params.id, {number: body.number}, { new: true })
+    .then(updatedCont => {
+      response.json(updatedCont.toJSON())
+    })
+    .catch(error => next(error))
 })
 
 // this middleware must be in the end of the code to work correctly
