@@ -84,11 +84,15 @@ app.post('/api/persons', (req, res, next) => {
 app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body;
     
-    Contact.findByIdAndUpdate(request.params.id, {number: body.number}, { new: true })
-    .then(updatedCont => {
-      response.json(updatedCont.toJSON())
-    })
-    .catch(error => next(error))
+    // this is for validation check
+    // it must be enabled manualy while update
+    const opts = { runValidators: true,  new: true  };
+    Contact
+        .findByIdAndUpdate(request.params.id, {number: body.number}, opts)
+        .then(updatedCont => {
+        response.json(updatedCont.toJSON())
+        })
+        .catch(error => next(error))
 })
 
 // this middleware must be in the end of the code to work correctly

@@ -17,9 +17,13 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
 const contactSchema = mongoose.Schema({
     name: {
         type: String,
+        minLength: 3,
         unique: true
     },
-    number:String,
+    number:{
+        type:String,
+        minLength: 8
+    }
 })
 
 contactSchema.set('toJSON', {
