@@ -57,7 +57,7 @@ app.delete('/api/persons/:id', (request, response, next) => {
   })
 
 //post new person
-app.post('/api/persons', (req, res) => {
+app.post('/api/persons', (req, res, next) => {
     const body = req.body
     
     // check if both name and phone number are provided
@@ -67,17 +67,21 @@ app.post('/api/persons', (req, res) => {
         })
     }
     
+    // create new contact to add in db
     const contact = new Contact({
         name: body.name,
         number: body.number,
     })
 
-    contact.save().then(returnedContact => {
-        res.json(returnedContact)
-    })
+    // save contact in db
+    contact
+        .save()
+        .then(returnedContact => res.json(returnedContact))
+        .catch(error => next(error))
 });
 
-app.put('/api/persons/:id', async (request, response, next) => {
+// update person
+app.put('/api/persons/:id', (request, response, next) => {
     const body = request.body;
     
     Contact.findByIdAndUpdate(request.params.id, {number: body.number}, { new: true })
@@ -91,9 +95,12 @@ app.put('/api/persons/:id', async (request, response, next) => {
 const errorHandler = (error, request, response, next) => {
   console.error(error.message)
 
+  // catch CastError, it happens when provied bad id
   if (error.name === 'CastError' && error.kind == 'ObjectId') {
     return response.status(400).send({ error: 'malformatted id' })
-  } 
+  } else if(error.name === "ValidationError"){
+      return response.status(400).send({ error: error.message})
+  }
 
   next(error)
 }

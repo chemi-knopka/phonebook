@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+var uniqueValidator = require('mongoose-unique-validator'); 
 
 const url = process.env.DB_URI
 console.log("connecting to database....");
@@ -14,7 +15,10 @@ mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFind
 
 // define schema for models
 const contactSchema = mongoose.Schema({
-    name: String,
+    name: {
+        type: String,
+        unique: true
+    },
     number:String,
 })
 
@@ -25,5 +29,8 @@ contactSchema.set('toJSON', {
         delete contactObj.__v
     }
 })
+
+// Apply the uniqueValidator plugin to userSchema.
+contactSchema.plugin(uniqueValidator);
 
 module.exports = mongoose.model('Contact', contactSchema);
