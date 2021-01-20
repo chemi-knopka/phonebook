@@ -6,8 +6,10 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "newBuild":"rm -rf build/ && cd ../phonebook/ && npm run build && cp -r build/ ../backend_phone/ && cd ../backend_phone/ && npm run dev"
+    "newBuild": "rm -rf build/ && cd ../phonebook/ && npm run build && cp -r build/ ../backend_phone/ && cd ../backend_phone/ && npm run dev",
+    
+    "lint": "eslint .",
+    "lint:fix": "eslint --fix ."
   },
   "repository": {
     "type": "git",
@@ -28,6 +30,7 @@
     "morgan": "^1.10.0"
   },
   "devDependencies": {
+    "eslint": "^7.2.0",
     "nodemon": "^2.0.6"
   }
 }
